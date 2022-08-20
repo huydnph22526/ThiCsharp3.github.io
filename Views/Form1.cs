@@ -13,106 +13,133 @@ namespace Project_Template_SM22_Csharp.Views
 {
     public partial class Form1 : Form
     {
-        private XeMayService _xeMayService;
+        private SachService sachService;
         public Form1()
         {
             InitializeComponent();
-            _xeMayService = new XeMayService();
-            LoadSoLuong();
-            Loaddata();
-            Loc();
+            sachService = new SachService();
+            LoadSoTrang();
+            LoadData();
+            LoadLoc();
         }
-        public void LoadSoLuong()
+        public void LoadSoTrang()
         {
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 201; i++)
             {
-                cmb_SoLuong.Items.Add(i);
+                cmb_SoTrang.Items.Add(i);
             }
-            cmb_SoLuong.SelectedIndex = 0;
+            cmb_SoTrang.SelectedIndex = 0;
         }
-        public void Loc()
+        public void LoadLoc()
         {
-            List<string> _lst = new List<string>() { "Lọc số lượng" };
-            foreach (var x in _lst)
+            List<string> lst= new List<string>()
+            {
+                "Lọc số trang 90","Lọc số trang 190"
+            };
+            foreach (var x in lst)
             {
                 cmb_Loc.Items.Add(x);
             }
-            
         }
-        public void Loaddata()
+        public void LoadData()
         {
-            dgrid_Load.ColumnCount = 4;
-            dgrid_Load.Columns[0].Name = "Mã";
-            dgrid_Load.Columns[1].Name = "Tên";
-            dgrid_Load.Columns[2].Name = "Số Lượng";
-            dgrid_Load.Columns[3].Name = "Trạng Thái";
-            dgrid_Load.Rows.Clear();
-            foreach (var x in _xeMayService.GetAll())
+            dataGridView1.ColumnCount = 4;
+            dataGridView1.Columns[0].Name = "Mã";
+            dataGridView1.Columns[1].Name = "Tên";
+            dataGridView1.Columns[2].Name = "Số Trang";
+            dataGridView1.Columns[3].Name = "Trạng Thái";
+            dataGridView1.Rows.Clear();
+            foreach (var x in sachService.GetAll())
             {
-                dgrid_Load.Rows.Add(x.Ma, x.Ten, x.SoLuong, x.TrangThai == 1 ? "Hoạt Động" : "Không hoạt động");
+                dataGridView1.Rows.Add(x.Ma, x.Ten, x.SoTrang, x.TrangThai == 1 ? "Hoạt Động" : "Không hoạt động");
             }
         }
-        private XeMay GetDataFromGui()
+        public Sach GetDataFromGui()
         {
-            return new XeMay()
+            return new Sach()
             {
-                Ma = txt_Ma.Text,
+                Ma= txt_Ma.Text,
                 Ten = txt_Ten.Text,
-                SoLuong = Convert.ToInt32(cmb_SoLuong.Text),
+                SoTrang= Int32.Parse(cmb_SoTrang.Text),
                 TrangThai = 1
             };
         }
 
-        private void btn_Them_Click(object sender, EventArgs e)
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            MessageBox.Show(_xeMayService.Add(GetDataFromGui()));
-            Loaddata();
+            int index = e.RowIndex;
+            txt_Ma.Text = dataGridView1.Rows[index].Cells[0].Value.ToString();
+            txt_Ten.Text = dataGridView1.Rows[index].Cells[1].Value.ToString();
+            cmb_SoTrang.Text = dataGridView1.Rows[index].Cells[2].Value.ToString();
+            
+        }
+
+        private void btn_Thêm_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(sachService.Add(GetDataFromGui()));
+            LoadData();
         }
 
         private void btn_Sua_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(_xeMayService.Update(GetDataFromGui()));
-           Loaddata();
+            MessageBox.Show(sachService.Update(GetDataFromGui()));
+            LoadData();
         }
 
-        private void dgrid_Load_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void btn_Xoa_Click(object sender, EventArgs e)
         {
-            
+            MessageBox.Show(sachService.Delete(GetDataFromGui()));
+            LoadData();
         }
-
-        private void dgrid_Load_CellClick(object sender, DataGridViewCellEventArgs e)
+        public void LoadLoc90()
         {
-            int a = e.RowIndex;
-            txt_Ma.Text = dgrid_Load.Rows[a].Cells[0].Value.ToString();
-            txt_Ten.Text = dgrid_Load.Rows[a].Cells[1].Value.ToString();
-            cmb_SoLuong.Text = dgrid_Load.Rows[a].Cells[2].Value.ToString();
-        }
-        public void Loadloc()
-        {
-            dgrid_Load.ColumnCount = 4;
-            dgrid_Load.Columns[0].Name = "Mã";
-            dgrid_Load.Columns[1].Name = "Tên";
-            dgrid_Load.Columns[2].Name = "Số Lượng";
-            dgrid_Load.Columns[3].Name = "Trạng Thái";
-            dgrid_Load.Rows.Clear();
-            foreach (var x in _xeMayService.GetAll().Where(c=>c.SoLuong<100))
+            dataGridView1.ColumnCount = 4;
+            dataGridView1.Columns[0].Name = "Mã";
+            dataGridView1.Columns[1].Name = "Tên";
+            dataGridView1.Columns[2].Name = "Số Trang";
+            dataGridView1.Columns[3].Name = "Trạng Thái";
+            dataGridView1.Rows.Clear();
+            foreach (var x in sachService.GetAll().Where(c=>c.SoTrang<90))
             {
-                dgrid_Load.Rows.Add(x.Ma, x.Ten, x.SoLuong, x.TrangThai == 1 ? "Hoạt Động" : "Không hoạt động");
+                dataGridView1.Rows.Add(x.Ma, x.Ten, x.SoTrang, x.TrangThai == 1 ? "Hoạt Động" : "Không hoạt động");
+            }
+        }
+        public void LoadLoc190()
+        {
+            dataGridView1.ColumnCount = 4;
+            dataGridView1.Columns[0].Name = "Mã";
+            dataGridView1.Columns[1].Name = "Tên";
+            dataGridView1.Columns[2].Name = "Số Trang";
+            dataGridView1.Columns[3].Name = "Trạng Thái";
+            dataGridView1.Rows.Clear();
+            foreach (var x in sachService.GetAll().Where(c=>c.SoTrang<190))
+            {
+                dataGridView1.Rows.Add(x.Ma, x.Ten, x.SoTrang, x.TrangThai == 1 ? "Hoạt Động" : "Không hoạt động");
             }
         }
 
         private void cmb_Loc_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(cmb_Loc.Text== "Lọc số lượng")
+            if(cmb_Loc.Text == "Lọc số trang 90")
             {
-                Loadloc();
+                LoadLoc90();
+            }
+            if (cmb_Loc.Text == "Lọc số trang 190")
+            {
+                LoadLoc190();
             }
         }
 
-        private void btn_Xoa_Click(object sender, EventArgs e)
+        private void btn_Clear_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(_xeMayService.Delete(GetDataFromGui()));
-            Loaddata();
+            DialogResult dialogResult = MessageBox.Show("Bạn có muốn Clear?", "Thông báo", MessageBoxButtons.YesNo);
+            if(dialogResult == DialogResult.Yes)
+            {
+                txt_Ma.Text = "";
+                txt_Ten.Text = "";
+                cmb_SoTrang.Text = "";
+            }
+            if (dialogResult == DialogResult.No) return;
         }
     }
 }
